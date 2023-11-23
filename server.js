@@ -5,7 +5,10 @@ import cors from "cors";
 import { create } from "domain";
 import { join } from "path";
 
-const Port = 5000;
+import dotenv from "dotenv";
+dotenv.config();
+
+const Port = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors());
