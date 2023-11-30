@@ -7,6 +7,7 @@ import { join } from "path";
 
 import dotenv from "dotenv";
 import { stringify } from "querystring";
+import { copyFileSync } from "fs";
 dotenv.config();
 
 const Port = process.env.PORT || 3000;
@@ -51,7 +52,9 @@ function unRegisterUser(id) {
   delete IdToName[id];
   rooms[roomName].delete(id);
   if (rooms[roomName].size === 0) {
+    console.log(`Deleting Room ${roomName}`);
     delete rooms[roomName];
+    console.log(`Rooms Active ${Object.keys(rooms).length}`);
   }
 }
 
@@ -129,12 +132,12 @@ io.on("connection", (socket) => {
     const roomName = data.roomName;
     const userName = data.userName;
     if (!roomName || !userName) {
-      socket.emit("room_join_failed", { msg: "Failed TO Join" });
+      socket.emit("room_join_failed", { msg: "Failed to Join" });
       return;
     }
     const success = createRoom(roomName);
     if (!success) {
-      socket.emit("room_join_failed", { msg: "Failed TO Join" });
+      socket.emit("room_join_failed", { msg: "Failed to Join" });
       return;
     }
     joinRoom(roomName, userName, socket);
@@ -157,6 +160,9 @@ io.on("connection", (socket) => {
 
   socket.on("send_message", (data) => {
     logEvent(socket, "send_message", data);
+    if (!IdToName[socket.id] || !IdToRoom[socket.id]) {
+      return;
+    }
     const msg = data.msg;
     io.to(getRoomName(socket.id)).emit("receive_message", {
       senderId: socket.id,
