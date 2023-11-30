@@ -68,6 +68,7 @@ function createRoom(roomName) {
 }
 
 function emitRoomList(roomName) {
+  if (!rooms[roomName] || rooms[roomName].size === 0) return;
   io.to(roomName).emit("room_list", {
     list: [...rooms[roomName]].map((id) => IdToName[id]),
   });
