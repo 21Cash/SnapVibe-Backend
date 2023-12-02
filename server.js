@@ -120,6 +120,10 @@ function leaveRoom(socket) {
   socket.leave(roomName);
 }
 
+app.get("/test", (req, res) => {
+  res.status(200).send("OK");
+});
+
 app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
   console.log("Hello World REQ");
